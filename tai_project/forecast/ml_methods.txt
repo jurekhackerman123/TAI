@@ -1,0 +1,11 @@
+
+
+I used a neural network with the hidden layer dimension (7,6) for the forecast. 
+I trained the net for 15 epochs since I realised that the loss curve does not decrease significantly after that. 
+
+As input, I used the temperature, windspeed- and direction and precipitation (6h). 
+The input dimension was (12, len(input)), since I provided for each variable one timestep before and after as well
+(For each series of 20 values which corresponds to five days). For the first value in these 20 I provided the first one 
+twice, for the last one in a series of twenty, I provided the last one twice. This is, because providing the one before 
+(in case of the first value) or the one after (in case of the last value) corresponds to the five day forecast series 
+of the next day.  
