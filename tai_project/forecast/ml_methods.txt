@@ -1,4 +1,5 @@
 
+Same as the data for last week
 
 I used a neural network with the hidden layer dimension (7,6) for the forecast. 
 I trained the net for 15 epochs since I realised that the loss curve does not decrease significantly after that. 
