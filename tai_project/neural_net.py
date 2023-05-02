@@ -17,19 +17,10 @@ df_target = df_target.drop(columns=df_target.columns[0])
 df_input  = pd.read_csv('data/input_data_1.csv')
 df_input  = df_input.drop(columns=df_input.columns[0])
 
-# in order to get rid of the NaN values, fuse them together, use dropna() and separate them again. This way, we get 2 arrays of the same shape back. 
-# We have to do this because there are no NaN values in target, but some in input, and the respective lines in target would not be dropped
 
-df_input[['temp_true', 'wind_direction_true', 'wind_speed_true', 'precip_quantity_6hour_true']] = df_target[['T(t)', 'WD(t)', 'WS(t)', 'P(t)']]
-# drop the NaN values
-df_input = df_input.dropna() 
-# create new dataframe
-df_target = pd.DataFrame()
-df_target[['T(t)', 'WD(t)', 'WS(t)', 'P(t)']] = df_input[['temp_true', 'wind_direction_true', 'wind_speed_true', 'precip_quantity_6hour_true']]
-df_input = df_input.drop(columns=['temp_true', 'wind_direction_true', 'wind_speed_true', 'precip_quantity_6hour_true'])
 
-# try leaving out wind_direction as a prediction
-df_target = df_target.drop(columns=['WD(t)'])
+# # try leaving out wind_direction as a prediction
+# df_target = df_target.drop(columns=['WD(t)'])
 
 arr_target = np.array(df_target)
 arr_input  = np.array(df_input)
@@ -93,6 +84,8 @@ loss_val_wind   = []
 loss_val_prec   = []
 loss_val_windd   = []
 
+loss_values = {'loss_train': [], 'loss_val': [], 'loss_train_temp': [],'loss_train_wind': [], 'loss_train_prec': [], 'loss_val_temp': [], 'loss_val_wind': [], 'loss_prec': []}
+
 max_number_epochs = 15
 hls = 20
 
@@ -120,18 +113,18 @@ for i in range(1, max_number_epochs):
     mse_train   = np.mean((y_pred_train - y_train)**2)
     mse_val     = np.mean((y_pred_val - y_val)**2)
 
-    loss_train_temp.append(mse_train_temp)
-    loss_train_wind.append(mse_train_wind)
-    loss_train_prec.append(mse_train_prec)
+    loss_values['loss_train_temp'].append(mse_train_temp)
+    loss_values['loss_train_wind'].append(mse_train_wind)
+    loss_values['loss_train_prec'].append(mse_train_prec)
     # loss_train_windd.append(mse_train_windd)
 
-    loss_val_temp.append(mse_val_temp)
-    loss_val_wind.append(mse_val_wind)
-    loss_val_prec.append(mse_val_prec)
+    loss_values['loss_val_temp'].append(mse_val_temp)
+    loss_values['loss_val_wind'].append(mse_val_wind)
+    loss_values['loss_val_prec'].append(mse_val_prec)
     # loss_val_windd.append(mse_val_windd)
     
-    loss_train.append(mse_train)
-    loss_val.append(mse_val)
+    loss_values['loss_train'].append(mse_train)
+    loss_values['loss_val'].append(mse_val)
 
 '''
 max_dim = 10
@@ -179,40 +172,33 @@ for i in range(1, max_dim):
 
 
 plt.figure()
-plt.plot(loss_train_temp, label="train-mse")
-plt.plot(loss_val_temp, label="val-mse")
+plt.plot(loss_values['loss_train_temp'], label="train-mse")
+plt.plot(loss_values['loss_val_temp'], label="val-mse")
 plt.legend()
 plt.xlabel("Number of epochs")
 plt.ylabel("Temperature MSE")
 plt.savefig('pics/temperature_mse.png')
 
 plt.figure()
-plt.plot(loss_train_wind, label="train-mse")
-plt.plot(loss_val_wind, label="val-mse")
+plt.plot(loss_values['loss_train_wind'], label="train-mse")
+plt.plot(loss_values['loss_val_wind'], label="val-mse")
 plt.legend()
 plt.xlabel("Number of epochs")
 plt.ylabel("Wind MSE")
 plt.savefig('pics/windspeed_mse.png')
 
-# plt.figure()
-# plt.plot(loss_train_windd, label="train-mse")
-# plt.plot(loss_val_windd, label="val-mse")
-# plt.legend()
-# plt.xlabel("Number of epochs")
-# plt.ylabel("Wind direction MSE")
-# plt.savefig('pics/winddirection_mse.png')
 
 plt.figure()
-plt.plot(loss_train_prec, label="train-mse")
-plt.plot(loss_val_prec, label="val-mse")
+plt.plot(loss_values['loss_train_prec'], label="train-mse")
+plt.plot(loss_values['loss_val_prec'], label="val-mse")
 plt.legend()
 plt.xlabel("Number of epochs")
 plt.ylabel("Precipitation MSE")
 plt.savefig('pics/precip_mse.png')
 
 plt.figure()
-plt.plot(loss_train, label="train-mse")
-plt.plot(loss_val, label="val-mse")
+plt.plot(loss_values['loss_train'], label="train-mse")
+plt.plot(loss_values['loss_val'], label="val-mse")
 plt.legend()
 plt.xlabel("Number of epochs")
 plt.ylabel("Total MSE")
@@ -238,12 +224,11 @@ total_pred = clf.predict(arr_forecast)
 
 pd.DataFrame(total_pred).to_csv('forecast/prediction.csv')
 
+# FOR THE FIRST DATASET: 
+# convert back into usual format; first 20 values, next 20 values and so on and save prediction 
 new_arr = np.zeros((1000,3))
-
-# convert back into usual format 
 for i in range(len(total_pred)):
     new_arr[i, :] = total_pred[int((i%20)*20 + np.floor(i/20))]
-
 pd.DataFrame(new_arr).to_csv('forecast/prediction.csv')
 
 print(np.shape(total_pred), np.shape(t_pred))

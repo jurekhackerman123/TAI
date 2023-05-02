@@ -12,6 +12,14 @@ print(np.shape(prediction))
 quantiles_arr = np.zeros((60, 5))
 
 def quantiles(prediction):
+    '''
+    this function accepts a numpy array of shape (1000, 3). In this array, the predictions for the weather forecast are stored 
+    (:, 0) : temperature 
+    (:, 1) : wind 
+    (: ,2) : precipitation
+    and produces a np.array of shape (60, 5). In total, we have 20 values for each variable (t,w,p) and 5 quantiles for every variable.
+    This numpy array then gets converted into a pd.DataFrame where strings are attached to make it better understandable 
+    '''
     quantiles_arr = np.zeros((60, 5))
     for i in range(20):
         # temperature
@@ -49,12 +57,12 @@ def quantiles(prediction):
     df_quantiles = df_quantiles.assign(target = target_list)
     df_quantiles = df_quantiles[['forecast_date', 'target', 'horizon', 'q0.025', 'q0.25', 'q0.5', 'q0.75', 'q0.975']]
 
-    
+    # return the pd.DataFrame
     return df_quantiles
 
-test = quantiles(prediction)
+prediction_ = quantiles(prediction)
 
-test.to_csv('forecast/20230422_PaoloConte.csv')
+prediction_.to_csv('forecast/20230422_PaoloConte.csv')
 
 
 
