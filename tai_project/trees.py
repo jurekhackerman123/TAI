@@ -112,7 +112,30 @@ print("For Precipitation: ", np.mean((bestTree[2].predict(x_test) - y_test[:,3])
 
 # load in forecastdata 
 
+df_forecast = pd.read_csv('forecast/training_input_2.csv')
+print(df_forecast.head())
+df_forecast  = df_forecast.drop(columns = df_forecast.columns[0])
+arr_forecast = np.array(df_forecast)
+t_pred = bestTree[0].predict(arr_forecast)
+w_pred = bestTree[0].predict(arr_forecast)
+p_pred = bestTree[0].predict(arr_forecast)
+total_pred = pd.DataFrame(columns=['t2m', 'wind', 'tp6'])
+total_pred[['t2m']]  = t_pred
+total_pred[['wind']] = w_pred
+total_pred[['tp6']]  = p_pred
 
+total_pred.to_csv('forecast/prediction.csv')
+
+# pd.DataFrame(total_pred).to_csv('forecast/prediction.csv')
+
+# FOR THE FIRST DATASET: 
+# convert back into usual format; first 20 values, next 20 values and so on and save prediction 
+# new_arr = np.zeros((1000,3))
+# for i in range(len(total_pred)):
+#     new_arr[i, :] = total_pred[int((i%20)*20 + np.floor(i/20))]
+# pd.DataFrame(new_arr).to_csv('forecast/prediction.csv')
+
+# print(np.shape(total_pred), np.shape(t_pred))
 
 
 
