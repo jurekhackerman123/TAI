@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 
 df_prediction  = pd.read_csv('forecast/prediction.csv')
+
+print(df_prediction.head())
 df_prediction = df_prediction.drop(columns=df_prediction.columns[0])
 
 print(df_prediction.head())
@@ -48,10 +50,10 @@ def quantiles(prediction):
             horizon_list.append(str(6*(i+1)) + ' hour')
         elif i < 40: 
             target_list.append('wind')
-            horizon_list.append(str(6*((i+1)%20)) + ' hour')
+            horizon_list.append(str(6+6*((i)%20)) + ' hour')
         else: 
             target_list.append('precip')   
-            horizon_list.append(str(6*((i+1)%20)) + ' hour') 
+            horizon_list.append(str(6+6*((i)%20)) + ' hour') 
     df_quantiles = df_quantiles.assign(forecast_date = date_list)
     df_quantiles = df_quantiles.assign(horizon = horizon_list)
     df_quantiles = df_quantiles.assign(target = target_list)
@@ -62,7 +64,7 @@ def quantiles(prediction):
 
 prediction_ = quantiles(prediction)
 
-prediction_.to_csv('forecast/20230422_PaoloConte.csv')
+prediction_.to_csv('forecast/20230429_PaoloConte.csv')
 
 
 

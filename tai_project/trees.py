@@ -117,14 +117,20 @@ print(df_forecast.head())
 df_forecast  = df_forecast.drop(columns = df_forecast.columns[0])
 arr_forecast = np.array(df_forecast)
 t_pred = bestTree[0].predict(arr_forecast)
-w_pred = bestTree[0].predict(arr_forecast)
-p_pred = bestTree[0].predict(arr_forecast)
-total_pred = pd.DataFrame(columns=['t2m', 'wind', 'tp6'])
-total_pred[['t2m']]  = t_pred
-total_pred[['wind']] = w_pred
-total_pred[['tp6']]  = p_pred
+w_pred = bestTree[1].predict(arr_forecast)
+p_pred = bestTree[2].predict(arr_forecast)
+print(np.shape(t_pred), np.shape(t_pred), np.shape(t_pred))
 
-total_pred.to_csv('forecast/prediction.csv')
+
+total_pred = np.zeros((1000,3))
+total_pred[:,0] = t_pred
+total_pred[:,1] = w_pred
+total_pred[:,2] = p_pred
+
+print(np.shape(total_pred), " is the shape")
+df_pred = pd.DataFrame(total_pred, columns=[['t2m', 'wind', 'tp6']])
+
+df_pred.to_csv('forecast/prediction.csv')
 
 # pd.DataFrame(total_pred).to_csv('forecast/prediction.csv')
 
